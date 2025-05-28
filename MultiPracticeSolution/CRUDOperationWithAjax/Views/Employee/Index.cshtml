@@ -1,0 +1,149 @@
+﻿@model CRUDOperationWithAjax.ViewModels.EmployeeViewModel
+<style>
+    body {
+        background-color: whitesmoke;
+    }
+
+    .createform {
+        padding: 15px;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+<div class="card">
+    <div class="card-body">
+        <form id="createform">
+            <div class="row createform">
+                <div class="col-md-6">
+                    <label asp-for="EmployeeCode" class="control-label"></label>
+                    <input asp-for="EmployeeCode" class="form-control" id="EmpCode" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FullName" class="control-label"></label>
+                    <input asp-for="FullName" class="form-control" id="Full_Name" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" id="_Email" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Address" class="control-label"></label>
+                    <input asp-for="Address" class="form-control" id="addr" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="PhoneNumber" class="control-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" id="phoneNo" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DOB" class="control-label"></label>
+                    <input asp-for="DOB" class="form-control" id="_DOB" />
+                </div>
+                <div class="form-group mt-3">
+                    <input type="button" value="Create" class="btn btn-success" id="btnCreate" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Employee Code</th>
+            <th scope="col">Full Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Address</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Date of Birth</th>
+            <th scope="col">Action</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+</table>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+    $(document).ready(function () {
+        GetEmployeeList();
+    });
+
+    $('#btnCreate').click(function () {
+        CheckFormNullOrEmpty();
+    });
+
+    function CheckFormNullOrEmpty() {
+        var _viewModel = new Object();
+        _viewModel.EmployeeCode = $('#EmpCode').val();
+        _viewModel.FullName = $('#Full_Name').val();
+        _viewModel.Email = $('#_Email').val();
+        _viewModel.Address = $('#addr').val();
+        _viewModel.PhoneNumber = $('#phoneNo').val();
+        _viewModel.DOB = $('#_DOB').val();
+
+        if (_viewModel.EmployeeCode == "" || _viewModel.EmployeeCode == null || _viewModel.EmployeeCode == undefined) {
+            WarningMessage("Please Fill Employee Code Field");
+        }
+        if (_viewModel.FullName == "" || _viewModel.FullName == null || _viewModel.FullName == undefined) {
+            WarningMessage("Please Fill Full Name Field");
+        }
+        if (_viewModel.Email == "" || _viewModel.Email == null || _viewModel.Email == undefined) {
+            WarningMessage("Please Fill Email Field");
+        } else {
+            CreateFormData();
+        }
+    }
+
+    function CreateFormData() {
+        var data = $("#createform").serialize();
+        console.log(data);
+        $.ajax({
+            type: "POST",
+            url: "/Employee/Index",
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            data: data,
+            success: function (result) {
+                if (result.response.respCode == "I000") {
+                    SuccessMessage(result.response.respMessage);
+                    GetEmployeeList();
+                }
+                console.log(result);
+            },
+            error: function () {
+                alert('Failed to receive the Data');
+                console.log('Failed ');
+            }
+        });
+    }
+    function GetEmployeeList() {
+        $.ajax({
+            url: "/Employee/GetEmployeeList",
+            dataType: "JSON",
+            type: "GET",
+            data: {},
+            success: function (dataResult) {
+                console.log(dataResult);
+                var content = "";
+                $('#tableBody').empty();
+                $('#tableBody').append(content);
+                for (var i = 0; i < dataResult.length; i++) {
+                    var item = dataResult[i];
+                    content += `<tr>
+                                        <td>${item.EmployeeCode}</td>
+                                        <td>${item.FullName}</td>
+                                        <td>${item.Email}</td>
+                                        <td>${item.Address}</td>
+                                        <td>${item.PhoneNumber}</td>
+                                        <td>${item.DOB_Str}</td>
+                                        <td><a href=/Employee/Edit/${item.ID}><i class="bi bi-pencil-square"></i></a>
+                                        <a href=/Employee/Delete/${item.ID}><i class="bi bi-trash3"></i></a>
+                                        </td>
+                                        </tr>`;
+                }
+                $('#tableBody').append(content);
+            }
+        })
+    }
+</script>
+
+

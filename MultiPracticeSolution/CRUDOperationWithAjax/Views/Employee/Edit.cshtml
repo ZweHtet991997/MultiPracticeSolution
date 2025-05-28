@@ -1,0 +1,105 @@
+﻿@model CRUDOperationWithAjax.ViewModels.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<style>
+    .createform {
+        padding: 15px;
+    }
+
+    a {
+        text-decoration: none;
+    }
+</style>
+<h4>Employee Edit Form</h4>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-action="Edit" id="editform">
+            <div class="row createform">
+                <input asp-for="ID" class="form-control" type="hidden" />
+                <div class="col-md-6">
+                    <label asp-for="EmployeeCode" class="control-label"></label>
+                    <input asp-for="EmployeeCode" class="form-control" id="EmpCode" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="FullName" class="control-label"></label>
+                    <input asp-for="FullName" class="form-control" id="Full_Name" />
+                </div><br /><br /><br />
+                <div class="col-md-6">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" id="_Email" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Address" class="control-label"></label>
+                    <input asp-for="Address" class="form-control" id="addr" />
+                </div><br /><br /><br />
+                <div class="col-md-6">
+                    <label asp-for="PhoneNumber" class="control-label"></label>
+                    <input asp-for="PhoneNumber" class="form-control" id="phoneNo" />
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="DateofBirth" class="control-label"></label>
+                    <input asp-for="DateofBirth" class="form-control" id="_DOB" />
+                </div>
+                <div class="form-group mt-3">
+                    <input type="button" value="Save" class="btn btn-primary" id="btnEdit" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script>
+
+    //$(document).ready(function () {
+
+    //})
+
+    $('#btnEdit').click(function () {
+        CheckFormNullOrEmpty();
+    })
+
+    function CheckFormNullOrEmpty() {
+        var _viewModel = new Object();
+        _viewModel.EmployeeCode = $('#EmpCode').val();
+        _viewModel.FullName = $('#Full_Name').val();
+        _viewModel.Email = $('#_Email').val();
+        _viewModel.Address = $('#addr').val();
+        _viewModel.PhoneNumber = $('#phoneNo').val();
+        _viewModel.DOB = $('#_DOB').val();
+
+        if (_viewModel.EmployeeCode == "" || _viewModel.EmployeeCode == null || _viewModel.EmployeeCode == undefined) {
+            WarningMessage("Please Fill Employee Code Field");
+        }
+        if (_viewModel.FullName == "" || _viewModel.FullName == null || _viewModel.FullName == undefined) {
+            WarningMessage("Please Fill Full Name Field");
+        }
+        if (_viewModel.Email == "" || _viewModel.Email == null || _viewModel.Email == undefined) {
+            WarningMessage("Please Fill Email Field");
+        } else {
+            CreateFormData();
+        }
+    }
+
+    function CreateFormData() {
+        var data = $("#editform").serialize();
+        console.log(data);
+        $.ajax({
+            type: "POST",
+            url: "/Employee/Edit",
+            contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+            data: data,
+            success: function (result) {
+                if (result.response.respCode = "I0000") {
+                    SuccessMessageboxWithCallBankLink(result.response.respMessage, "Update Success", "Index", "Employee");
+                }
+            },
+            error: function () {
+                console.log("Failed");
+            }
+        })
+    }
+</script>
+

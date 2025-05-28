@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "AjaxMethod";
+}
+
+<h1>AjaxMethod</h1>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row createform">
+            <input type="text" id="txtEmployeeCode" />
+            <input type="text" id="txtID" />
+            <input type="text" id="txtFullName" />
+            <input type="text" id="txtAddress" />
+            <input type="button" id="btnGet" value="Get Current Time" />
+        </div>
+    </div>
+</div>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#btnGet").click(function () {
+            var person = {};
+            person.ID = $("#txtID").val();
+            person.EmployeeCode = $("#txtEmployeeCode").val();
+            person.FullName = $('#txtFullName').val();
+            person.Address = $('#txtAddress').val();
+            $.ajax({
+                type: "POST",
+                url: "/Employee/AjaxMethod",
+                data: '{person: ' + JSON.stringify(person) + '}',
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (response) {
+                    alert("Hello: " + response.Name + ".\nCurrent Date and Time: " + response.DateTime);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+    });
+</script>
+
